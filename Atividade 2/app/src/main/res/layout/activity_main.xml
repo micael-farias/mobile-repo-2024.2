@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/label_bom_dia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bom dia!"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/input_bom_dia"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:hint="Digite uma palavra aqui e clique no botão"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/label_bom_dia"
+        app:layout_constraintStart_toStartOf="@id/label_bom_dia"
+        app:layout_constraintEnd_toEndOf="@id/label_bom_dia"/>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clique aqui"
+        android:backgroundTint="@color/black"
+        android:layout_marginTop="40dp"
+        app:layout_constraintStart_toStartOf="@id/label_bom_dia"
+        app:layout_constraintEnd_toEndOf="@id/label_bom_dia"
+        app:layout_constraintTop_toBottomOf="@id/input_bom_dia"/>
+
+    <TextView
+        android:id="@+id/texto"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintStart_toStartOf="@id/label_bom_dia"
+        app:layout_constraintEnd_toEndOf="@id/label_bom_dia"
+        app:layout_constraintTop_toBottomOf="@id/button"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
