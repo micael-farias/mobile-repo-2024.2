@@ -3,32 +3,31 @@ package com.example.counterapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.animation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.counterapp.ui.theme.CounterAppTheme
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.counterapp.ui.theme.CounterAppTheme
+import kotlin.random.Random
 
-// Classe principal da atividade
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            // Define o tema da aplicação
             CounterAppTheme {
-                // Define a superfície da tela com a cor de fundo padrão do tema
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
                     CounterApp()
                 }
             }
@@ -36,109 +35,169 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
-// Função composable principal que define a interface do usuário da calculadora
 @Composable
 fun CounterApp() {
-    // Estado para armazenar o resultado das operações
     var result by remember { mutableStateOf(0.0) }
-    // Estado para armazenar o valor de entrada do usuário
     var input by remember { mutableStateOf("") }
+    var message by remember { mutableStateOf("Comece a calcular!") }
+    var operationsCount by remember { mutableStateOf(0) }
 
-    // Estrutura em coluna para alinhar elementos verticalmente
+    // Função para atualizar a mensagem com base no resultado
+    fun updateMessage() {
+        message = when {
+            result > 100 -> "Uau! Você está rico!"
+            result < -100 -> "Parece que está no vermelho!"
+            result == 0.0 -> "De volta ao ponto de partida!"
+            else -> "Resultado: $result"
+        }
+    }
+
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally, // Alinhamento horizontal centralizado
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .fillMaxSize() // Ocupa todo o espaço disponível
-            .padding(16.dp), // Adiciona espaçamento nas bordas
-        verticalArrangement = Arrangement.Center // Centraliza os elementos verticalmente
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center
     ) {
-        // Exibe o resultado atual
+        // Exibe o resultado com uma animação
+        AnimatedContent(
+            targetState = result,
+            transitionSpec = {
+                slideInVertically { height -> height } + fadeIn() with
+                        slideOutVertically { height -> -height } + fadeOut()
+            }
+        ) { targetResult ->
+            Text(
+                text = "Resultado: $targetResult",
+                fontSize = 24.sp,
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+
+        // Mostra a mensagem dinâmica
         Text(
-            text = "Resultado: $result",
-            fontSize = 24.sp,
-            modifier = Modifier.padding(8.dp)
+            text = message,
+            fontSize = 16.sp,
+            color = Color.Gray,
+            modifier = Modifier.padding(4.dp)
         )
-        // Campo de entrada para número, onde o usuário digita um valor
+
+        // Campo de entrada para número
         OutlinedTextField(
             value = input,
-            onValueChange = { input = it }, // Atualiza o valor de input com o valor digitado
+            onValueChange = { input = it },
             label = { Text("Digite um número") },
-            modifier = Modifier.fillMaxWidth() // Ocupa a largura total
+            modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp)) // Espaço entre o campo de entrada e os botões
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Linha com os botões de incremento e decremento
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp), // Espaçamento entre os botões
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Botão Incrementar
             Button(
                 onClick = {
-                    result += input.toDoubleOrNull() ?: 0.0 // Adiciona o valor digitado ao resultado
-                    input = "" // Limpa o campo de entrada
+                    result += input.toDoubleOrNull() ?: 0.0
+                    input = ""
+                    operationsCount++
+                    updateMessage()
                 },
-                modifier = Modifier.weight(1f) // O botão ocupa metade da linha
+                modifier = Modifier.weight(1f)
             ) {
                 Text("Incrementar")
             }
-// Botão Decrementar
+
             Button(
                 onClick = {
-                    result -= input.toDoubleOrNull() ?: 0.0 // Subtrai o valor digitado do resultado
-                    input = "" // Limpa o campo de entrada
+                    result -= input.toDoubleOrNull() ?: 0.0
+                    input = ""
+                    operationsCount++
+                    updateMessage()
                 },
-                modifier = Modifier.weight(1f) // O botão ocupa metade da linha
+                modifier = Modifier.weight(1f)
             ) {
                 Text("Decrementar")
             }
         }
 
-        // Linha com os botões de multiplicação e divisão
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp), // Espaçamento entre os botões
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp) // Espaçamento superior
+                .padding(top = 8.dp)
         ) {
-            // Botão Multiplicar
             Button(
                 onClick = {
-                    result *= input.toDoubleOrNull() ?: 1.0 // Multiplica o resultado pelo valor digitado
-                    input = "" // Limpa o campo de entrada
+                    result *= input.toDoubleOrNull() ?: 1.0
+                    input = ""
+                    operationsCount++
+                    updateMessage()
                 },
-                modifier = Modifier.weight(1f) // O botão ocupa metade da linha
+                modifier = Modifier.weight(1f)
             ) {
                 Text("Multiplicar")
             }
-            // Botão Dividir
+
             Button(
                 onClick = {
                     val value = input.toDoubleOrNull() ?: 1.0
-                    if (value != 0.0) { // Verifica se o valor não é zero para evitar divisão por zero
-                        result /= value // Divide o resultado pelo valor digitado
+                    if (value != 0.0) {
+                        result /= value
                     }
-                    input = "" // Limpa o campo de entrada
+                    input = ""
+                    operationsCount++
+                    updateMessage()
                 },
-                modifier = Modifier.weight(1f) // O botão ocupa metade da linha
+                modifier = Modifier.weight(1f)
             ) {
                 Text("Dividir")
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp)) // Espaço antes do botão Limpar
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Botão Limpar para redefinir o resultado e o campo de entrada
         Button(
             onClick = {
-                result = 0.0 // Redefine o resultado para zero
-                input = "" // Limpa o campo de entrada
+                result = 0.0
+                input = ""
+                message = "Recomece do zero!"
+                operationsCount = 0
             },
-            modifier = Modifier.fillMaxWidth() // O botão ocupa a largura total
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text("Limpar")
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                // Operação aleatória
+                when (Random.nextInt(4)) {
+                    0 -> result += Random.nextDouble(1.0, 10.0)
+                    1 -> result -= Random.nextDouble(1.0, 10.0)
+                    2 -> result *= Random.nextDouble(1.0, 2.0)
+                    3 -> {
+                        val randomValue = Random.nextDouble(1.0, 10.0)
+                        if (randomValue != 0.0) result /= randomValue
+                    }
+                }
+                operationsCount++
+                updateMessage()
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Surpresa!")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Exibe a contagem de operações
+        Text(
+            text = "Operações realizadas: $operationsCount",
+            fontSize = 16.sp,
+            color = Color.Gray
+        )
     }
 }
